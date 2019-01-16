@@ -5,8 +5,8 @@ DATA = csvread('transfusion.data');
 
 % - - - - -  Zmienne
 
-L_SIZE = 70;
-T_SIZE = 48;
+L_SIZE = 200;
+T_SIZE = 50;
 
 % - - - - -  Przygotowanie danych
 
@@ -20,9 +20,9 @@ for i = 1:L_SIZE
    l_data_correct(i) = DATA(i,5);
 end
 
-for i = L_SIZE+1:T_SIZE
-    t_data(i,:) = DATA(i,1:4);
-    t_data_correct(i) = DATA(i,5);
+for i = 1:T_SIZE
+    t_data(i,:) = DATA(i+L_SIZE+1,1:4);
+    t_data_correct(i) = DATA(i+L_SIZE+1,5);
 end
 
 l_data = l_data';
@@ -35,15 +35,16 @@ t_data_correct = t_data_correct';
 
 popsize = 10;
 randombounds = 10;
-gamma = 0.97;
-maxiter = 1;
+gamma = 0.091;
+maxiter = 20;
 beta = 0.8;
-alpha = 0.8;
+alpha = 0.2;
 
 % - - - - -  Konfiguracja sieci
 
 net = feedforwardnet([2,1,2]);
 net = configure(net,l_data,l_data_correct);
+net.divideFcn = 'dividetrain';
 %view(net);
 
 % - - - - - Algorytm firefly
@@ -56,6 +57,7 @@ fireflies = zeros(popsize,dimensions);
 fireflies_light = zeros(popsize,1);
 bestfirefly = zeros(1,dimensions);
 bestmse = 10^5;
+bestiterfound = 0;
 
 for i = 1:popsize
    for j = 1:dimensions
@@ -70,15 +72,13 @@ for f=1:popsize
    
 end
 
-dimensions
-
 % GLOWNA PETLA PROGRAMU
 
 for iterator = 1:maxiter
     iterator
     for k = 1:popsize
         k
-        for m = 1:k
+        for m = 1:popsize
            if fireflies_light(m)>fireflies_light(k)
               %m
               %k
@@ -88,8 +88,11 @@ for iterator = 1:maxiter
               for dims = 1:dimensions
                  r = r+(fireflies(m,dims)-fireflies(k,dims))^2; 
               end
+              r = sqrt(r);
+              BETA = beta*exp(-gamma*r);
               for dims = 1:dimensions
-                 fireflies(k,dims) = fireflies(k,dims) + beta*exp(-gamma*r)*(fireflies(m,dims)-fireflies(k,dims))+alpha*(rand()-1);
+
+                 fireflies(k,dims) = fireflies(k,dims) +BETA*(fireflies(m,dims)-fireflies(k,dims))+alpha*(rand()-1);
               end
               
                   iter = 1;
@@ -97,11 +100,10 @@ for iterator = 1:maxiter
                   f = k;
                   faval;
                   
-                  fireflies_light(k) = 1/mse;
-                  
                   if mse<bestmse
                       bestmse = mse;
                       bestfirefly = fireflies(k,:);
+                      bestiterfound = iterator
                   end
            end
         end
@@ -115,24 +117,29 @@ fireflies(1,:) = bestfirefly;
 f=1;
 faval;
 
+
+
 corrects = 0;
 
+
 for iterator = 1:T_SIZE
-    result = net(t_data(:,iterator));
+    result = net(t_data(:,iterator))
     if t_data_correct(iterator) == 1
-        if abs(result) < 1
+        if result < 1
             corrects = corrects+0;
         else
             corrects = corrects+1;
         end
     else
-        if abs(result)<1
-            corrects = correcrs+1;
+        if result<1
+            corrects = corrects+1;
         else
             corrects = corrects+0;
         end
     end
 end
 
-corrects/T_SIZE
 
+corrects
+
+correts = corrects/T_SIZE
