@@ -82,7 +82,7 @@ for iterator = 1:maxiter
     bestIterLightArray(iterator) = bestIterLight;
     bestmseArray(iterator) = bestmse;
     plot(plot1,x,bestIterLightArray,'-b')
-    title('Najlepsze swiat≈Ço w iteracji');
+    title('Najlepsze swiat≥o w iteracji');
     plot(plot2,x,bestmseArray,'-b')
     title('Najlepszy znaleziony MSE');
 end
