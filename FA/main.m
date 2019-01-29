@@ -101,3 +101,4 @@ corrects = (errMatrix(1,1) + errMatrix(2,2) + errMatrix(3,3) ) /T_SIZE;
 corrects
 
 result = net(t_data);
+

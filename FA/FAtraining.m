@@ -63,8 +63,7 @@ for iterator = 1:maxiter
                     bestfirefly = fireflies(k,:);
                     bestiterfound = iterator;
                 end
-            end
-            
+            end  
         end
     end
     [bestIterLight,bestIterFirefly] = max(fireflies_light);
@@ -82,12 +81,13 @@ for iterator = 1:maxiter
     bestIterLightArray(iterator) = bestIterLight;
     bestmseArray(iterator) = bestmse;
     plot(plot1,x,bestIterLightArray,'-b')
-    title('Najlepsze swiat³o w iteracji');
+    title('Best iteration light');
     plot(plot2,x,bestmseArray,'-b')
-    title('Najlepszy znaleziony MSE');
+    title('Lowest found error');
 end
 fireflies(1,:) = bestfirefly;
 
-fprintf('Training done.\nBest mse: %f\nFound in iteration: %i\n',bestmse,bestiterfound);
-
+fprintf('Training done.\nLowest error: %f\nFound in iteration: %i\n',bestmse,bestiterfound);
+bestiterfound
 outputNet = setwb(net,fireflies(1,:));
+
